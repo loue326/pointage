@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Style des puces (chips) du formulaire de congé -->
+    <style name="LeaveTypeChip" parent="Widget.Material3.Chip.Filter">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/text_dark</item>
+        <item name="android:textSize">13sp</item>
+        <item name="chipBackgroundColor">@color/chip_bg_selector</item>
+        <item name="checkedIconVisible">false</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="chipStrokeColor">@color/chip_stroke_selector</item>
+    </style>
+</resources>

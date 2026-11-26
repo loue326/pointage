@@ -1,3 +1,57 @@
 <resources>
-    <string name="app_name">GestionPointage</string>
+    <string name="app_name">Gestion Pointage</string>
+
+    <!-- Authentification -->
+    <string name="login_title">Bienvenue</string>
+    <string name="login_subtitle">Connectez-vous pour gérer votre pointage et vos congés</string>
+    <string name="hint_email">Adresse e-mail</string>
+    <string name="hint_password">Mot de passe</string>
+    <string name="btn_login">Se connecter</string>
+    <string name="btn_show_password">Afficher</string>
+    <string name="role_employee">Employé</string>
+    <string name="role_admin">Administrateur</string>
+    <string name="demo_emp">Démo : employee@gmail.com / emp123</string>
+    <string name="demo_admin">Démo : admin@gmail.com / admin123</string>
+
+    <!-- Employé -->
+    <string name="menu_pointage">Pointage</string>
+    <string name="menu_pauses">Mes pauses</string>
+    <string name="menu_historique">Historique</string>
+    <string name="menu_agenda">Agenda &amp; congés</string>
+    <string name="menu_mes_demandes">Mes demandes</string>
+    <string name="btn_logout">Déconnexion</string>
+
+    <string name="btn_arrivee">Pointer l\'arrivée</string>
+    <string name="btn_sortie">Pointer la sortie</string>
+    <string name="btn_start_break">Prendre une pause</string>
+    <string name="btn_end_break">Reprendre le travail</string>
+
+    <!-- Types de pause -->
+    <string name="break_lunch">Pause déjeuner</string>
+    <string name="break_coffee">Pause café</string>
+    <string name="break_personal">Pause personnelle</string>
+    <string name="break_medical">Pause médicale</string>
+    <string name="break_prayer">Pause prière</string>
+
+    <!-- Congés -->
+    <string name="leave_title">Demande de congé</string>
+    <string name="leave_reason">Motif du congé</string>
+    <string name="leave_type">Type de congé</string>
+    <string name="leave_start">Date de début</string>
+    <string name="leave_end">Date de fin</string>
+    <string name="leave_send">Envoyer la demande</string>
+    <string name="leave_cancel">Annuler</string>
+
+    <string name="status_pending">En attente</string>
+    <string name="status_approved">Accepté</string>
+    <string name="status_rejected">Refusé</string>
+
+    <!-- Admin -->
+    <string name="admin_users">Employés</string>
+    <string name="admin_attendance">Pointages &amp; pauses</string>
+    <string name="admin_leaves">Demandes de congé</string>
+    <string name="btn_accept">Accepter</string>
+    <string name="btn_refuse">Refuser</string>
+
+    <string name="no_data">Aucune donnée pour le moment.</string>
 </resources>
