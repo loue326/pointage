@@ -1,184 +1,205 @@
 package com.example.gestionpointage;
 
 import android.app.DatePickerDialog;
-import android.content.SharedPreferences;
+import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.gestionpointage.adapter.DayAdapter;
+import com.example.gestionpointage.adapter.LeaveAdapter;
+import com.example.gestionpointage.api.Holiday;
+import com.example.gestionpointage.api.HolidayService;
 import com.example.gestionpointage.database.DatabaseHelper;
+import com.example.gestionpointage.model.LeaveRequest;
+import com.example.gestionpointage.session.SessionManager;
+import com.example.gestionpointage.util.Ui;
 
-import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
+/**
+ * Agenda : calendrier de sélection des dates + liste des demandes de congé.
+ */
 public class LeaveActivity extends AppCompatActivity {
 
-    private Button btnStartDate, btnEndDate;
-    private Button btnSubmitLeave, btnBack;
+    private DatabaseHelper db;
+    private SessionManager session;
 
-    private EditText etReason;
+    private DayAdapter dayAdapter;
+    private TextView monthTitle, selectionLabel, selectionSummary, holidayLabel;
+    private TextView emptyLeaves;
+    private RecyclerView myLeavesList;
 
-    private DatabaseHelper databaseHelper;
-
-    private int userId;
-
-    private String startDate = "";
-    private String endDate = "";
-
-    private SimpleDateFormat dateFormat =
-            new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+    private int year, month;              // month : 0 = janvier
+    private String startIso = null;
+    private String endIso = null;
+    private List<Holiday> holidays;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_leave);
 
-        databaseHelper = new DatabaseHelper(this);
+        db = new DatabaseHelper(this);
+        session = new SessionManager(this);
 
-        SharedPreferences preferences =
-                getSharedPreferences("user_session", MODE_PRIVATE);
-
-        userId = preferences.getInt("user_id", -1);
-
-        String role = preferences.getString("user_role", "");
-
-        if (userId == -1 || !role.equals("employee")) {
-            finish();
-            return;
-        }
-
-        btnStartDate = findViewById(R.id.btnStartDate);
-        btnEndDate = findViewById(R.id.btnEndDate);
-        btnSubmitLeave = findViewById(R.id.btnSubmitLeave);
-        btnBack = findViewById(R.id.btnBack);
-
-        etReason = findViewById(R.id.etReason);
-
-        // Choisir la date de debut
-        btnStartDate.setOnClickListener(v -> showDatePicker(true));
-
-        // Choisir la date de fin
-        btnEndDate.setOnClickListener(v -> showDatePicker(false));
-
-        // Envoyer la demande
-        btnSubmitLeave.setOnClickListener(v -> submitLeave());
-
-        // Retour
-        btnBack.setOnClickListener(v -> finish());
-    }
-
-    // Afficher le calendrier
-    private void showDatePicker(boolean isStartDate) {
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
 
         Calendar calendar = Calendar.getInstance();
+        year = calendar.get(Calendar.YEAR);
+        month = calendar.get(Calendar.MONTH);
 
-        if (isStartDate && !startDate.isEmpty()) {
-            calendar.setTime(Date.valueOf(startDate));
-        } else if (!isStartDate && !endDate.isEmpty()) {
-            calendar.setTime(Date.valueOf(endDate));
-        }
+        monthTitle = findViewById(R.id.monthTitle);
+        selectionLabel = findViewById(R.id.selectionLabel);
+        selectionSummary = findViewById(R.id.selectionSummary);
+        holidayLabel = findViewById(R.id.holidayLabel);
+        emptyLeaves = findViewById(R.id.emptyLeaves);
+        myLeavesList = findViewById(R.id.myLeavesList);
 
-        long minimumDate = System.currentTimeMillis();
+        // ---------- Calendrier ----------
+        RecyclerView grid = findViewById(R.id.calendarGrid);
+        grid.setLayoutManager(new GridLayoutManager(this, 7));
 
-        DatePickerDialog datePicker = new DatePickerDialog(
-                this,
-                (view, year, month, dayOfMonth) -> {
+        dayAdapter = new DayAdapter(year, month);
+        grid.setAdapter(dayAdapter);
 
-                    Calendar selected = Calendar.getInstance();
+        dayAdapter.setOnDayClick(this::onDaySelected);
 
-                    selected.set(year, month, dayOfMonth);
+        findViewById(R.id.btnPrevMonth).setOnClickListener(v -> changeMonth(-1));
+        findViewById(R.id.btnNextMonth).setOnClickListener(v -> changeMonth(1));
+        monthTitle.setText(dayAdapter.getTitle());
 
-                    String date = dateFormat.format(
-                            selected.getTime()
-                    );
+        // ---------- Jours fériés : API externe ----------
+        loadHolidays();
 
-                    if (isStartDate) {
+        // ---------- Nouvelle demande ----------
+        findViewById(R.id.btnNewLeave).setOnClickListener(v -> {
 
-                        startDate = date;
+            if (startIso == null || endIso == null) {
+                Ui.toast(this, "Sélectionnez d'abord vos dates dans l'agenda.");
+                return;
+            }
 
-                        btnStartDate.setText(date);
+            Intent intent = new Intent(this, AddLeaveActivity.class);
+            intent.putExtra("start", startIso);
+            intent.putExtra("end", endIso);
+            startActivity(intent);
+        });
 
-                        if (!endDate.isEmpty()
-                                && endDate.compareTo(startDate) < 0) {
-
-                            endDate = "";
-                            btnEndDate.setText("Choisir la date de fin");
-                        }
-
-                    } else {
-
-                        if (startDate.isEmpty()) {
-                            showMessage(
-                                    "Choisissez d'abord la date de début."
-                            );
-                            return;
-                        }
-
-                        if (date.compareTo(startDate) < 0) {
-                            showMessage(
-                                    "La date de fin doit être après la date de début."
-                            );
-                            return;
-                        }
-
-                        endDate = date;
-                        btnEndDate.setText(date);
-                    }
-
-                },
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)
-        );
-
-        datePicker.getDatePicker().setMinDate(minimumDate);
-
-        datePicker.show();
+        // ---------- Mes demandes ----------
+        myLeavesList.setLayoutManager(new LinearLayoutManager(this));
+        myLeavesList.setAdapter(new LeaveAdapter(new java.util.ArrayList<>(), false));
     }
 
-    // Enregistrer la demande
-    private void submitLeave() {
+    @Override
+    protected void onResume() {
+        super.onResume();
+        refreshMyLeaves();
+    }
 
-        String reason = etReason.getText().toString().trim();
+    // =========================================================
+    //  Calendrier
+    // =========================================================
 
-        if (startDate.isEmpty() || endDate.isEmpty()
-                || reason.isEmpty()) {
+    private void changeMonth(int delta) {
+        month += delta;
+        if (month > 11) {
+            month = 0;
+            year++;
+        } else if (month < 0) {
+            month = 11;
+            year--;
+        }
 
-            showMessage("Veuillez remplir tous les champs.");
+        dayAdapter.rebuild(year, month);
+        monthTitle.setText(dayAdapter.getTitle());
+    }
+
+    private void onDaySelected(String isoDate) {
+
+        if (startIso == null || endIso != null) {
+            // Nouvelle sélection
+            startIso = isoDate;
+            endIso = null;
+        } else if (isoDate.compareTo(startIso) <= 0) {
+            startIso = isoDate;
+            endIso = null;
+        } else {
+            endIso = isoDate;
+        }
+
+        dayAdapter.setSelection(startIso, endIso);
+        updateSelectionLabels();
+    }
+
+    private void updateSelectionLabels() {
+
+        if (startIso == null) {
+            selectionLabel.setText("Touchez une date pour commencer");
+            selectionSummary.setText("Sélectionnez vos dates dans l'agenda");
+            holidayLabel.setVisibility(View.GONE);
             return;
         }
 
-        boolean success = databaseHelper.addLeave(
-                userId,
-                startDate,
-                endDate,
-                reason
-        );
-
-        if (success) {
-
-            showMessage("Demande envoyée avec succès !");
-
-            finish();
-
+        if (endIso == null) {
+            selectionLabel.setText("Début : " + Ui.isoToFr(startIso) + "  —  choisissez la fin");
+            selectionSummary.setText("Début le " + Ui.isoToLong(startIso));
         } else {
-
-            showMessage("Erreur lors de l'envoi de la demande.");
+            long days = LeaveRequest.dateDiffDays(startIso, endIso);
+            selectionLabel.setText(Ui.isoToFr(startIso) + " → " + Ui.isoToFr(endIso)
+                    + "  (" + days + " jour" + (days > 1 ? "s" : "") + ")");
+            selectionSummary.setText(days + " jour" + (days > 1 ? "s" : "")
+                    + " demandé" + (days > 1 ? "s" : ""));
         }
+
+        // Jour férié dans la sélection ?
+        if (holidays != null) {
+            Holiday h = HolidayService.find(holidays, startIso);
+            if (h != null) {
+                holidayLabel.setText("⚠ " + h.localName + " le " + Ui.isoToFr(h.date)
+                        + " (jour férié)");
+                holidayLabel.setVisibility(View.VISIBLE);
+                return;
+            }
+        }
+        holidayLabel.setVisibility(View.GONE);
     }
 
-    private void showMessage(String message) {
+    private void loadHolidays() {
+        HolidayService.fetch(new HolidayService.Listener() {
+            @Override
+            public void onResult(List<Holiday> result) {
+                if (isFinishing() || isDestroyed()) return;
+                holidays = result;
+                dayAdapter.setHolidays(result);
+                updateSelectionLabels();
+            }
 
-        Toast.makeText(
-                this,
-                message,
-                Toast.LENGTH_LONG
-        ).show();
+            @Override
+            public void onError(String message) {
+                if (isFinishing() || isDestroyed()) return;
+                Ui.toast(LeaveActivity.this,
+                        "Impossible de charger les jours fériés : " + message);
+            }
+        });
+    }
+
+    // =========================================================
+    //  Mes demandes
+    // =========================================================
+
+    private void refreshMyLeaves() {
+        List<LeaveRequest> leaves = db.getLeavesOf(session.getUserId());
+
+        myLeavesList.setAdapter(new LeaveAdapter(leaves, false));
+        emptyLeaves.setVisibility(leaves.isEmpty() ? View.VISIBLE : View.GONE);
     }
 }

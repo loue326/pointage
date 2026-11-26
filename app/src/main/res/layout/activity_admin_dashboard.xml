@@ -1,128 +1,437 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0F1930">
+    android:background="@color/bg"
+    android:orientation="vertical">
 
+    <!-- EN-TÊTE -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/bg_gradient_header"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:paddingHorizontal="20dp"
+        android:paddingTop="34dp"
+        android:paddingBottom="46dp">
 
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="ADMIN DASHBOARD"
-            android:textColor="#FFFFFF"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/avatar"
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:background="@drawable/circle_white_20"
+                android:gravity="center"
+                android:text="AD"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/userName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Administrateur"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.8"
+                    android:text="Espace administrateur"
+                    android:textColor="@color/white"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/btnLogout"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/circle_white_20"
+                android:contentDescription="@string/btn_logout"
+                android:padding="9dp"
+                android:src="@drawable/ic_logout" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Vue d'ensemble 📊"
+            android:textColor="#CFE3FF"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:letterSpacing="-0.02"
+            android:text="Tableau de bord"
+            android:textColor="@color/white"
             android:textSize="25sp"
-            android:textStyle="bold"
-            android:gravity="center"
-            android:padding="20dp"/>
+            android:textStyle="bold" />
+    </LinearLayout>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Gestion des employés"
-            android:textColor="#FF8800"
-            android:textSize="20sp"
-            android:textStyle="bold"/>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="#1B2942"
-            android:padding="15dp"
-            android:layout_marginTop="10dp">
+            android:paddingHorizontal="18dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="28dp">
 
-            <TextView
-                android:id="@+id/txtTotalEmployees"
+            <!-- STATISTIQUES -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Total employés : 0"
-                android:textColor="#FFFFFF"
-                android:textSize="17sp"/>
+                android:layout_marginTop="-34dp"
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/txtPresent"
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="6dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_stat_blue"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="👥"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/statEmployees"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="0"
+                        android:textColor="@color/white"
+                        android:textSize="26sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Employés"
+                        android:textColor="#E4EEFF"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_stat_green"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="📍"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/statPresent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="0"
+                        android:textColor="@color/white"
+                        android:textSize="26sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Présents aujourd'hui"
+                        android:textColor="#EAFFF1"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Présents : 0"
-                android:textColor="#FFFFFF"
-                android:textSize="17sp"
-                android:paddingTop="10dp"/>
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
 
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="6dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_stat_orange"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="⏳"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/statPending"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="0"
+                        android:textColor="@color/white"
+                        android:textSize="26sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Congés en attente"
+                        android:textColor="#FFF8E6"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_stat_purple"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="☕"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/statBreaks"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="0"
+                        android:textColor="@color/white"
+                        android:textSize="26sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Pauses aujourd'hui"
+                        android:textColor="#F3ECFF"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ACTIONS -->
             <TextView
-                android:id="@+id/txtAbsent"
+                style="@style/SectionTitle"
+                android:text="Gestion" />
+
+            <LinearLayout
+                android:id="@+id/actionUsers"
+                style="@style/ActionRow">
+
+                <TextView
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="@drawable/circle_primary"
+                    android:gravity="center"
+                    android:text="👥"
+                    android:textSize="18sp" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Employés"
+                        android:textColor="@color/text_dark"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Liste, pointages et pauses de chacun"
+                        android:textColor="@color/text_medium"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="›"
+                    android:textColor="@color/primary"
+                    android:textSize="26sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/actionLeaves"
+                style="@style/ActionRow">
+
+                <TextView
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="@drawable/circle_warning"
+                    android:gravity="center"
+                    android:text="🌴"
+                    android:textSize="18sp" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Demandes de congé"
+                        android:textColor="@color/text_dark"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/leavesSubtitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Accepter ou refuser les demandes"
+                        android:textColor="@color/text_medium"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="›"
+                    android:textColor="@color/primary"
+                    android:textSize="26sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/actionBreaks"
+                style="@style/ActionRow">
+
+                <TextView
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="@drawable/circle_purple"
+                    android:gravity="center"
+                    android:text="☕"
+                    android:textSize="18sp" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Pauses du jour"
+                        android:textColor="@color/text_dark"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Toutes les pauses en cours et terminées"
+                        android:textColor="@color/text_medium"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="›"
+                    android:textColor="@color/primary"
+                    android:textSize="26sp" />
+            </LinearLayout>
+
+            <!-- API EXTERNE -->
+            <TextView
+                style="@style/SectionTitle"
+                android:text="Jours fériés (API externe)" />
+
+            <LinearLayout
+                android:id="@+id/holidayCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Absents : 0"
-                android:textColor="#FFFFFF"
-                android:textSize="17sp"
-                android:paddingTop="10dp"/>
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_card"
+                android:elevation="6dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="16dp">
 
-            <TextView
-                android:id="@+id/txtPending"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Congés en attente : 0"
-                android:textColor="#FFFFFF"
-                android:textSize="17sp"
-                android:paddingTop="10dp"/>
+                <TextView
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="@drawable/circle_blue"
+                    android:gravity="center"
+                    android:text="🌍"
+                    android:textSize="18sp" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/holidayTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Chargement…"
+                        android:textColor="@color/text_dark"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/holidaySubtitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Récupération depuis date.nager.at"
+                        android:textColor="@color/text_medium"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
 
         </LinearLayout>
-
-        <Button
-            android:id="@+id/btnEmployees"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Liste des employés"
-            android:layout_marginTop="15dp"
-            android:backgroundTint="#FF8800"
-            android:textColor="#FFFFFF"/>
-
-        <Button
-            android:id="@+id/btnLeaves"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Demandes de congés"
-            android:backgroundTint="#FF8800"
-            android:textColor="#FFFFFF"/>
-
-        <Button
-            android:id="@+id/btnAttendance"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Consulter les pointages"
-            android:backgroundTint="#FF8800"
-            android:textColor="#FFFFFF"/>
-
-        <Button
-            android:id="@+id/btnBreaks"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Consulter les pauses"
-            android:backgroundTint="#FF8800"
-            android:textColor="#FFFFFF"/>
-
-        <TextView
-            android:id="@+id/txtSectionTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Bienvenue Administrateur"
-            android:textColor="#FF8800"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:paddingTop="25dp"
-            android:paddingBottom="15dp"/>
-
-        <LinearLayout
-            android:id="@+id/contentContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"/>
-
-    </LinearLayout>
-
-</ScrollView>
+    </ScrollView>
+</LinearLayout>

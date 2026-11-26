@@ -1,110 +1,521 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0F1930">
+    android:background="@color/bg"
+    android:orientation="vertical">
 
+    <!-- ================= EN-TÊTE ================= -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/bg_gradient_header"
         android:orientation="vertical"
-        android:padding="22dp">
+        android:paddingHorizontal="20dp"
+        android:paddingTop="34dp"
+        android:paddingBottom="46dp">
 
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="ESPACE EMPLOYÉ"
-            android:textColor="#FFFFFF"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/avatar"
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:background="@drawable/circle_white_20"
+                android:gravity="center"
+                android:text="AB"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/userName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Ahmed Ben Salah"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/userJob"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.8"
+                    android:text="Développeur"
+                    android:textColor="@color/white"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/btnLogout"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/circle_white_20"
+                android:contentDescription="@string/btn_logout"
+                android:padding="9dp"
+                android:src="@drawable/ic_logout" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Bonjour 👋"
+            android:textColor="#CFE3FF"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/dashboardTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:letterSpacing="-0.02"
+            android:text="Mon espace"
+            android:textColor="@color/white"
             android:textSize="25sp"
-            android:textStyle="bold"
-            android:gravity="center"
-            android:padding="20dp"/>
-
-        <TextView
-            android:id="@+id/txtWelcome"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Bienvenue"
-            android:textColor="#FF8800"
-            android:textSize="20sp"
-            android:gravity="center"
-            android:padding="12dp"/>
-
-        <TextView
-            android:id="@+id/txtStatus"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Statut : Non pointé"
-            android:textColor="#FFFFFF"
-            android:textSize="18sp"
-            android:gravity="center"
-            android:background="#1B2942"
-            android:padding="20dp"/>
-
-        <TextView
-            android:id="@+id/txtTimer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="10:00"
-            android:textColor="#FF8800"
-            android:textSize="38sp"
-            android:textStyle="bold"
-            android:gravity="center"
-            android:padding="20dp"/>
-
-        <Button
-            android:id="@+id/btnCheckIn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Pointer mon arrivée"
-            android:backgroundTint="#FF8800"
-            android:textColor="#FFFFFF"/>
-
-        <Button
-            android:id="@+id/btnStartBreak"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Commencer ma pause"
-            android:backgroundTint="#FF8800"
-            android:textColor="#FFFFFF"
-            android:layout_marginTop="10dp"/>
-
-        <Button
-            android:id="@+id/btnEndBreak"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Reprendre le travail"
-            android:backgroundTint="#FF8800"
-            android:textColor="#FFFFFF"
-            android:layout_marginTop="10dp"/>
-
-        <Button
-            android:id="@+id/btnCheckOut"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Pointer ma sortie"
-            android:backgroundTint="#FF8800"
-            android:textColor="#FFFFFF"
-            android:layout_marginTop="10dp"/>
-
-        <Button
-            android:id="@+id/btnLeaveRequests"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Mes demandes de congé"
-            android:backgroundTint="#FF8800"
-            android:textColor="#FFFFFF"
-            android:layout_marginTop="10dp"/>
-
-        <Button
-            android:id="@+id/btnLogout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Déconnexion"
-            android:backgroundTint="#B3261E"
-            android:textColor="#FFFFFF"
-            android:layout_marginTop="20dp"/>
-
+            android:textStyle="bold" />
     </LinearLayout>
 
-</ScrollView>
+    <!-- ================= CONTENU ================= -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="18dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="28dp">
+
+            <!-- Carte du jour -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-34dp"
+                android:background="@drawable/bg_card"
+                android:elevation="8dp"
+                android:orientation="vertical"
+                android:padding="18dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Ma journée"
+                        android:textColor="@color/text_dark"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/todayDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="—"
+                        android:textColor="@color/text_light"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/todayArrival"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="--:--"
+                            android:textColor="@color/success"
+                            android:textSize="22sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Arrivée"
+                            android:textColor="@color/text_medium"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="40dp"
+                        android:background="@color/divider" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/todayExit"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="--:--"
+                            android:textColor="@color/danger"
+                            android:textSize="22sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Sortie"
+                            android:textColor="@color/text_medium"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="40dp"
+                        android:background="@color/divider" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/todayBreaks"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="@color/purple"
+                            android:textSize="22sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Pauses"
+                            android:textColor="@color/text_medium"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/statusLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:background="@drawable/chip_pending"
+                    android:gravity="center"
+                    android:padding="9dp"
+                    android:text="Vous n'avez pas encore pointé"
+                    android:textColor="@color/warning"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- Menu -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginStart="4dp"
+                android:text="Que voulez-vous faire ?"
+                android:textColor="@color/text_medium"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:id="@+id/menuPointage"
+                    style="@style/MenuCard"
+                    android:layout_marginEnd="6dp">
+
+                    <TextView
+                        android:layout_width="46dp"
+                        android:layout_height="46dp"
+                        android:background="@drawable/circle_primary"
+                        android:contentDescription="@string/menu_pointage"
+                        android:gravity="center"
+                        android:text="⏱"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="@string/menu_pointage"
+                        android:textColor="@color/text_dark"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Entrée / Sortie"
+                        android:textColor="@color/text_light"
+                        android:textSize="11sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/menuBreaks"
+                    style="@style/MenuCard"
+                    android:layout_marginStart="6dp">
+
+                    <TextView
+                        android:layout_width="46dp"
+                        android:layout_height="46dp"
+                        android:background="@drawable/circle_purple"
+                        android:contentDescription="@string/menu_pauses"
+                        android:gravity="center"
+                        android:text="☕"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="@string/menu_pauses"
+                        android:textColor="@color/text_dark"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Début / Fin"
+                        android:textColor="@color/text_light"
+                        android:textSize="11sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:id="@+id/menuHistory"
+                    style="@style/MenuCard"
+                    android:layout_marginEnd="6dp">
+
+                    <TextView
+                        android:layout_width="46dp"
+                        android:layout_height="46dp"
+                        android:background="@drawable/circle_cyan"
+                        android:contentDescription="@string/menu_historique"
+                        android:gravity="center"
+                        android:text="📅"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="@string/menu_historique"
+                        android:textColor="@color/text_dark"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Mes pointages"
+                        android:textColor="@color/text_light"
+                        android:textSize="11sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/menuAgenda"
+                    style="@style/MenuCard"
+                    android:layout_marginStart="6dp">
+
+                    <TextView
+                        android:layout_width="46dp"
+                        android:layout_height="46dp"
+                        android:background="@drawable/circle_warning"
+                        android:contentDescription="@string/menu_agenda"
+                        android:gravity="center"
+                        android:text="🌴"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="@string/menu_agenda"
+                        android:textColor="@color/text_dark"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Demander un congé"
+                        android:textColor="@color/text_light"
+                        android:textSize="11sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:id="@+id/menuMyLeaves"
+                    style="@style/MenuCard"
+                    android:layout_marginEnd="6dp">
+
+                    <TextView
+                        android:layout_width="46dp"
+                        android:layout_height="46dp"
+                        android:background="@drawable/circle_success"
+                        android:contentDescription="@string/menu_mes_demandes"
+                        android:gravity="center"
+                        android:text="✅"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="@string/menu_mes_demandes"
+                        android:textColor="@color/text_dark"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/myLeavesSubtitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Suivi des statuts"
+                        android:textColor="@color/text_light"
+                        android:textSize="11sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/menuAddLeave"
+                    style="@style/MenuCard"
+                    android:layout_marginStart="6dp">
+
+                    <TextView
+                        android:layout_width="46dp"
+                        android:layout_height="46dp"
+                        android:background="@drawable/circle_danger"
+                        android:contentDescription="@string/leave_title"
+                        android:gravity="center"
+                        android:text="📝"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="Nouvelle demande"
+                        android:textColor="@color/text_dark"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Formulaire de congé"
+                        android:textColor="@color/text_light"
+                        android:textSize="11sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Dernière activité -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginStart="4dp"
+                android:text="Dernière activité"
+                android:textColor="@color/text_medium"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/lastActivityCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_card"
+                android:elevation="6dp"
+                android:orientation="horizontal"
+                android:padding="16dp">
+
+                <TextView
+                    android:id="@+id/lastActivityIcon"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:background="@drawable/circle_blue"
+                    android:gravity="center"
+                    android:text="🕒"
+                    android:textSize="18sp" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/lastActivityTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Aucune activité"
+                        android:textColor="@color/text_dark"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/lastActivitySub"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Votre journée n'a pas encore commencé"
+                        android:textColor="@color/text_medium"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

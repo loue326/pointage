@@ -1,112 +1,181 @@
 package com.example.gestionpointage;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.widget.Button;
+import android.os.Handler;
+import android.os.Looper;
+import android.text.InputType;
+import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.gestionpointage.database.DatabaseHelper;
+import com.example.gestionpointage.model.User;
+import com.example.gestionpointage.session.SessionManager;
+import com.example.gestionpointage.util.Ui;
 
+/**
+ * Connexion employé / administrateur.
+ * Le rôle est choisi avec deux puces au-dessus du formulaire.
+ */
 public class LoginActivity extends AppCompatActivity {
 
-    private EditText etEmail, etPassword;
-    private Button btnLogin;
+    private EditText inputEmail, inputPassword;
+    private TextView chipEmployee, chipAdmin, errorMessage, demoHint;
+    private ProgressBar progress;
+    private boolean adminSelected = false;
+    private boolean passwordVisible = false;
 
-    private DatabaseHelper databaseHelper;
+    private final Handler handler = new Handler(Looper.getMainLooper());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_login);
 
-        // Initialiser les composants
-        etEmail = findViewById(R.id.etEmail);
-        etPassword = findViewById(R.id.etPassword);
-        btnLogin = findViewById(R.id.btnLogin);
+        inputEmail = findViewById(R.id.inputEmail);
+        inputPassword = findViewById(R.id.inputPassword);
+        chipEmployee = findViewById(R.id.chipEmployee);
+        chipAdmin = findViewById(R.id.chipAdmin);
+        errorMessage = findViewById(R.id.errorMessage);
+        progress = findViewById(R.id.loginProgress);
+        demoHint = findViewById(R.id.demoHint);
+        TextView btnToggle = findViewById(R.id.btnTogglePassword);
+        TextView btnLogin = findViewById(R.id.btnLogin);
 
-        // Initialiser SQLite
-        databaseHelper = new DatabaseHelper(this);
+        selectRole(false);
 
-        // Bouton connexion
-        btnLogin.setOnClickListener(v -> loginUser());
+        chipEmployee.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectRole(false);
+            }
+        });
+
+        chipAdmin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectRole(true);
+            }
+        });
+
+        btnToggle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                passwordVisible = !passwordVisible;
+                inputPassword.setInputType(passwordVisible
+                        ? InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+                        : InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                inputPassword.setSelection(inputPassword.getText().length());
+                btnToggle.setText(passwordVisible ? "Masquer" : getString(R.string.btn_show_password));
+            }
+        });
+
+        btnLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                attemptLogin();
+            }
+        });
     }
 
-    private void loginUser() {
+    /** Change le rôle sélectionné et le texte d'aide */
+    private void selectRole(boolean admin) {
+        adminSelected = admin;
 
-        String email = etEmail.getText().toString().trim();
-        String password = etPassword.getText().toString();
+        chipEmployee.setSelected(!admin);
+        chipAdmin.setSelected(admin);
 
-        // Verifier les champs
+        chipEmployee.setAlpha(admin ? 0.65f : 1f);
+        chipAdmin.setAlpha(admin ? 1f : 0.65f);
+
+        demoHint.setText(admin ? R.string.demo_admin : R.string.demo_emp);
+        hideError();
+    }
+
+    /** Vérification des identifiants dans un thread séparé */
+    private void attemptLogin() {
+
+        final String email = inputEmail.getText().toString().trim();
+        final String password = inputPassword.getText().toString().trim();
+
         if (email.isEmpty() || password.isEmpty()) {
-
-            Toast.makeText(
-                    this,
-                    "Veuillez remplir tous les champs",
-                    Toast.LENGTH_SHORT
-            ).show();
-
+            showError("Veuillez saisir votre e-mail et votre mot de passe.");
             return;
         }
 
-        // Verifier les identifiants dans SQLite
-        String role = databaseHelper.login(email, password);
-
-        if (role != null) {
-
-            int userId = databaseHelper.getUserId(email);
-
-            // Enregistrer la session
-            SharedPreferences preferences =
-                    getSharedPreferences("user_session", MODE_PRIVATE);
-
-            preferences.edit()
-                    .putInt("user_id", userId)
-                    .putString("user_email", email)
-                    .putString("user_role", role)
-                    .apply();
-
-            Toast.makeText(
-                    this,
-                    "Connexion réussie !",
-                    Toast.LENGTH_SHORT
-            ).show();
-
-            // Redirection selon le role
-            if (role.equals("admin")) {
-
-                Intent intent = new Intent(
-                        LoginActivity.this,
-                        AdminDashboardActivity.class
-                );
-
-                startActivity(intent);
-
-            } else {
-
-                Intent intent = new Intent(
-                        LoginActivity.this,
-                        EmployeeDashboardActivity.class
-                );
-
-                intent.putExtra("user_id", userId);
-
-                startActivity(intent);
-            }
-
-            finish();
-
-        } else {
-
-            Toast.makeText(
-                    this,
-                    "Email ou mot de passe incorrect",
-                    Toast.LENGTH_SHORT
-            ).show();
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            showError("L'adresse e-mail n'est pas valide.");
+            return;
         }
+
+        hideError();
+        setBusy(true);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                final DatabaseHelper db = new DatabaseHelper(LoginActivity.this);
+                String role = db.login(email, password);
+
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        if (isFinishing() || isDestroyed()) return;
+
+                        if (role == null) {
+                            setBusy(false);
+                            showError("Identifiants incorrects. Essayez les comptes de démonstration.");
+                            return;
+                        }
+
+                        boolean isAdmin = "admin".equals(role);
+
+                        if (isAdmin != adminSelected) {
+                            setBusy(false);
+                            showError(adminSelected
+                                    ? "Ce compte est un compte employé, pas administrateur."
+                                    : "Ce compte est un compte administrateur, pas employé.");
+                            return;
+                        }
+
+                        // Enregistrement de la session
+                        int userId = db.getUserId(email);
+                        User user = db.getUserById(userId);
+
+                        new SessionManager(LoginActivity.this).saveSession(
+                                userId, email, user.name, role);
+
+                        setBusy(false);
+
+                        Intent intent = new Intent(LoginActivity.this, isAdmin
+                                ? AdminDashboardActivity.class
+                                : EmployeeDashboardActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+            }
+        }).start();
+    }
+
+    private void setBusy(boolean busy) {
+        progress.setVisibility(busy ? View.VISIBLE : View.GONE);
+        findViewById(R.id.btnLogin).setEnabled(!busy);
+        findViewById(R.id.btnLogin).setAlpha(busy ? 0.6f : 1f);
+    }
+
+    private void showError(String message) {
+        errorMessage.setText(message);
+        errorMessage.setVisibility(View.VISIBLE);
+    }
+
+    private void hideError() {
+        errorMessage.setVisibility(View.GONE);
     }
 }

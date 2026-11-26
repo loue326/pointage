@@ -1,106 +1,256 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F3F6FA"
-    android:fillViewport="true">
+    android:background="@color/bg"
+    android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="20dp">
+    <LinearLayout style="@style/ScreenHeader">
 
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Demande de congé"
-            android:textColor="#2143B5"
-            android:textSize="25sp"
-            android:textStyle="bold"
-            android:gravity="center"
-            android:layout_marginBottom="10dp"/>
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/btnBack"
+                style="@style/IconButton"
+                android:gravity="center"
+                android:text="‹"
+                android:textColor="@color/white"
+                android:textSize="28sp"
+                android:textStyle="bold" />
+
+            <TextView
+                style="@style/HeaderTitle"
+                android:text="@string/menu_agenda" />
+        </LinearLayout>
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sélectionnez votre période de congé"
-            android:textColor="#777777"
-            android:textSize="14sp"
-            android:gravity="center"
-            android:layout_marginBottom="25dp"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Date de début"
-            android:textColor="#24477F"
-            android:textStyle="bold"/>
-
-        <Button
-            android:id="@+id/btnStartDate"
-            android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:layout_marginTop="8dp"
-            android:backgroundTint="#FFFFFF"
-            android:text="Choisir la date de début"
-            android:textColor="#2143B5"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="Date de fin"
-            android:textColor="#24477F"
-            android:textStyle="bold"/>
-
-        <Button
-            android:id="@+id/btnEndDate"
-            android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:layout_marginTop="8dp"
-            android:backgroundTint="#FFFFFF"
-            android:text="Choisir la date de fin"
-            android:textColor="#2143B5"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="Motif du congé"
-            android:textColor="#24477F"
-            android:textStyle="bold"/>
-
-        <EditText
-            android:id="@+id/etReason"
-            android:layout_width="match_parent"
-            android:layout_height="120dp"
-            android:layout_marginTop="8dp"
-            android:background="@android:drawable/edit_text"
-            android:gravity="top"
-            android:hint="Expliquez votre demande..."
-            android:inputType="textMultiLine"
-            android:padding="12dp"/>
-
-        <Button
-            android:id="@+id/btnSubmitLeave"
-            android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:layout_marginTop="25dp"
-            android:backgroundTint="#2143B5"
-            android:text="ENVOYER LA DEMANDE"
-            android:textColor="#FFFFFF"
-            android:textStyle="bold"/>
-
-        <Button
-            android:id="@+id/btnBack"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
             android:layout_marginTop="10dp"
-            android:backgroundTint="#777777"
-            android:text="RETOUR"
-            android:textColor="#FFFFFF"/>
-
+            android:layout_marginStart="52dp"
+            android:text="Choisissez vos dates dans l'agenda"
+            android:textColor="#CFE3FF"
+            android:textSize="13sp" />
     </LinearLayout>
 
-</ScrollView>
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="30dp">
+
+            <!-- ================= CALENDRIER ================= -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-30dp"
+                android:background="@drawable/bg_card"
+                android:elevation="10dp"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Navigation du mois -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/btnPrevMonth"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
+                        android:background="@drawable/chip_soft"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:text="‹"
+                        android:textColor="@color/primary"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/monthTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="Janvier 2026"
+                        android:textColor="@color/text_dark"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/btnNextMonth"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
+                        android:background="@drawable/chip_soft"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:text="›"
+                        android:textColor="@color/primary"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- Jours de la semaine -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="horizontal">
+
+                    <TextView style="@style/WeekDay" android:text="Lun" />
+                    <TextView style="@style/WeekDay" android:text="Mar" />
+                    <TextView style="@style/WeekDay" android:text="Mer" />
+                    <TextView style="@style/WeekDay" android:text="Jeu" />
+                    <TextView style="@style/WeekDay" android:text="Ven" />
+                    <TextView style="@style/WeekDay" android:text="Sam" />
+                    <TextView style="@style/WeekDay" android:text="Dim" />
+                </LinearLayout>
+
+                <!-- Grille des jours -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/calendarGrid"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:nestedScrollingEnabled="false"
+                    android:overScrollMode="never" />
+
+                <!-- Résumé de la sélection -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:background="@drawable/bg_soft_chip"
+                    android:orientation="vertical"
+                    android:padding="12dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="📅"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:id="@+id/selectionLabel"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_weight="1"
+                            android:text="Touchez une date pour commencer"
+                            android:textColor="@color/text_dark"
+                            android:textSize="13sp" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/holidayLabel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:textColor="@color/warning"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:visibility="gone" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ================= DEMANDE ================= -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_card"
+                android:elevation="6dp"
+                android:orientation="horizontal"
+                android:padding="16dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Prêt à partir ? 🌴"
+                        android:textColor="@color/text_dark"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/selectionSummary"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
+                        android:text="Sélectionnez vos dates dans l'agenda"
+                        android:textColor="@color/text_medium"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/btnNewLeave"
+                    android:layout_width="wrap_content"
+                    android:layout_height="46dp"
+                    android:background="@drawable/btn_primary"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:paddingHorizontal="18dp"
+                    android:text="Demander"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- ================= MES DEMANDES ================= -->
+            <TextView
+                style="@style/SectionTitle"
+                android:text="Mes demandes de congé" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/myLeavesList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:nestedScrollingEnabled="false"
+                android:overScrollMode="never" />
+
+            <TextView
+                android:id="@+id/emptyLeaves"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_card"
+                android:elevation="4dp"
+                android:gravity="center"
+                android:padding="24dp"
+                android:text="Aucune demande pour le moment"
+                android:textColor="@color/text_light"
+                android:textSize="13sp"
+                android:visibility="gone" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>
