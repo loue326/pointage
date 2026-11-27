@@ -11,6 +11,7 @@ import com.example.gestionpointage.database.DatabaseHelper;
 import com.example.gestionpointage.model.AttendanceRecord;
 import com.example.gestionpointage.model.BreakRecord;
 import com.example.gestionpointage.model.LeaveRequest;
+import com.example.gestionpointage.model.User;
 import com.example.gestionpointage.session.SessionManager;
 import com.example.gestionpointage.util.Ui;
 
@@ -46,7 +47,7 @@ public class EmployeeDashboardActivity extends AppCompatActivity {
                 : "?");
         userName.setText(session.getName());
 
-        com.example.gestionpointage.model.User me = db.getUserById(session.getUserId());
+        User me = db.getUserById(session.getUserId());
         userJob.setText(me == null || me.job == null || me.job.isEmpty()
                 ? "Employé" : me.job);
 
@@ -54,6 +55,9 @@ public class EmployeeDashboardActivity extends AppCompatActivity {
 
         // ----- Navigation -----
         findViewById(R.id.btnLogout).setOnClickListener(v -> logout());
+
+        statusLabel.setOnClickListener(v ->
+                startActivity(new Intent(this, PointageActivity.class)));
 
         findViewById(R.id.menuPointage).setOnClickListener(v ->
                 startActivity(new Intent(this, PointageActivity.class)));

@@ -18,11 +18,22 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    // Signature de l'APK de livraison (release)
+    signingConfigs {
+        create("release") {
+            storeFile = file("../keystore/gestionpointage.jks")
+            storePassword = "gestionpointage"
+            keyAlias = "gestionpointage"
+            keyPassword = "gestionpointage"
+        }
+    }
+
     buildTypes {
         release {
             optimization {
                 enable = false
             }
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {

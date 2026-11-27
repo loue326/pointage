@@ -6,7 +6,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -28,7 +27,8 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Pointage : arrivée, sortie, début/fin de pause et pauses du jour.
+ * Pointage : Entrées, Sorties et Pauses multiples par jour.
+ * Le Champ Pause affiche : Type, Entrée (Début), Sortie (Fin), et Durée.
  */
 public class PointageActivity extends AppCompatActivity {
 
@@ -36,8 +36,10 @@ public class PointageActivity extends AppCompatActivity {
     private DatabaseHelper db;
 
     private TextView liveClock, liveDate, statusChip;
-    private TextView arrivalValue, exitValue, btnClock;
-    private TextView breakState, btnBreak;
+    private TextView arrivalValue, exitValue;
+    private TextView btnArrival, btnExit, btnBreak;
+    private TextView breakEmojiHeader, breakState;
+    private TextView breakTypeValue, breakStartValue, breakEndValue, breakDurationValue;
     private RecyclerView breaksList;
     private TextView emptyBreaks;
 
@@ -75,9 +77,18 @@ public class PointageActivity extends AppCompatActivity {
         statusChip = findViewById(R.id.statusChip);
         arrivalValue = findViewById(R.id.arrivalValue);
         exitValue = findViewById(R.id.exitValue);
-        btnClock = findViewById(R.id.btnClock);
-        breakState = findViewById(R.id.breakState);
+
+        btnArrival = findViewById(R.id.btnArrival);
+        btnExit = findViewById(R.id.btnExit);
         btnBreak = findViewById(R.id.btnBreak);
+
+        breakEmojiHeader = findViewById(R.id.breakEmojiHeader);
+        breakState = findViewById(R.id.breakState);
+        breakTypeValue = findViewById(R.id.breakTypeValue);
+        breakStartValue = findViewById(R.id.breakStartValue);
+        breakEndValue = findViewById(R.id.breakEndValue);
+        breakDurationValue = findViewById(R.id.breakDurationValue);
+
         breaksList = findViewById(R.id.breaksList);
         emptyBreaks = findViewById(R.id.emptyBreaks);
 
@@ -89,7 +100,8 @@ public class PointageActivity extends AppCompatActivity {
 
         liveDate.setText(Ui.isoToLong(Ui.nowIso()));
 
-        btnClock.setOnClickListener(v -> onClockClick());
+        btnArrival.setOnClickListener(v -> onArrivalClick());
+        btnExit.setOnClickListener(v -> onExitClick());
         btnBreak.setOnClickListener(v -> onBreakClick());
     }
 
@@ -108,48 +120,70 @@ public class PointageActivity extends AppCompatActivity {
     }
 
     // =========================================================
-    //  Pointage entrée / sortie
+    //  Pointage Entrée
     // =========================================================
 
-    private void onClockClick() {
+    private void onArrivalClick() {
         int userId = session.getUserId();
 
-        if (!db.hasAttendanceToday(userId)) {
-            boolean ok = db.markArrival(userId);
-            Ui.toast(this, ok ? "Arrivée enregistrée 🌅" : "Impossible d'enregistrer l'arrivée");
-        } else if (db.isClockedIn(userId)) {
-            if (db.hasOpenBreak(userId)) {
-                Ui.toast(this, "Terminez d'abord votre pause avant de pointer la sortie.");
-                return;
-            }
-            boolean ok = db.markExit(userId);
-            Ui.toast(this, ok ? "Sortie enregistrée 🌙" : "Impossible d'enregistrer la sortie");
+        if (db.isClockedIn(userId)) {
+            AttendanceRecord today = db.getTodayAttendance(userId);
+            String arrivalTime = (today != null && today.arrivalTime != null)
+                    ? DatabaseHelper.shortTime(today.arrivalTime) : "";
+            Ui.toast(this, "Vous êtes déjà en poste (Entrée à " + arrivalTime + "). Pointez votre sortie pour terminer cette session.");
         } else {
-            Ui.toast(this, "Vous avez déjà terminé votre journée.");
+            boolean ok = db.markArrival(userId);
+            Ui.toast(this, ok ? "Nouvelle entrée enregistrée avec succès 🌅" : "Impossible d'enregistrer l'entrée");
         }
 
         refresh();
     }
 
     // =========================================================
-    //  Pauses
+    //  Pointage Sortie
+    // =========================================================
+
+    private void onExitClick() {
+        int userId = session.getUserId();
+
+        if (!db.isClockedIn(userId)) {
+            Ui.toast(this, "Vous n'avez pas d'entrée en cours. Pointez d'abord votre entrée !");
+            return;
+        }
+
+        if (db.hasOpenBreak(userId)) {
+            Ui.toast(this, "Terminez d'abord votre pause avant de pointer la sortie.");
+            return;
+        }
+
+        boolean ok = db.markExit(userId);
+        Ui.toast(this, ok ? "Sortie enregistrée 🌙. Vous pourrez re-pointer une entrée plus tard." : "Impossible d'enregistrer la sortie");
+
+        refresh();
+    }
+
+    // =========================================================
+    //  Pauses & Choisir Type de Pause
     // =========================================================
 
     private void onBreakClick() {
         int userId = session.getUserId();
 
-        if (!db.isClockedIn(userId)) {
-            Ui.toast(this, "Pointez d'abord votre arrivée pour prendre une pause.");
-            return;
-        }
-
         if (db.hasOpenBreak(userId)) {
             boolean ok = db.endBreak(userId);
             Ui.toast(this, ok ? "Pause terminée, bon travail ! 💪" : "Erreur lors de la fin de pause");
             refresh();
-        } else {
-            showBreakTypeDialog();
+            return;
         }
+
+        if (!db.isClockedIn(userId)) {
+            boolean arrivalOk = db.markArrival(userId);
+            if (arrivalOk) {
+                Ui.toast(this, "Entrée enregistrée automatiquement 🌅");
+            }
+        }
+
+        showBreakTypeDialog();
     }
 
     /** Dialogue de choix du type de pause */
@@ -170,6 +204,9 @@ public class PointageActivity extends AppCompatActivity {
             TextView name = row.findViewById(R.id.typeName);
 
             switch (type) {
+                case "Pause normale":
+                    emoji.setText("⏸️");
+                    break;
                 case "Déjeuner":
                     emoji.setText("🍽️");
                     break;
@@ -182,8 +219,14 @@ public class PointageActivity extends AppCompatActivity {
                 case "Médicale":
                     emoji.setText("🏥");
                     break;
-                default:
+                case "Prière":
                     emoji.setText("🕌");
+                    break;
+                case "Pause exceptionnelle":
+                    emoji.setText("⚡");
+                    break;
+                default:
+                    emoji.setText("☕");
                     break;
             }
 
@@ -205,7 +248,7 @@ public class PointageActivity extends AppCompatActivity {
     }
 
     // =========================================================
-    //  Affichage
+    //  Affichage & Rafraîchissement du Champ Pause
     // =========================================================
 
     private void refresh() {
@@ -213,47 +256,83 @@ public class PointageActivity extends AppCompatActivity {
         int userId = session.getUserId();
         AttendanceRecord today = db.getTodayAttendance(userId);
 
+        btnArrival.setEnabled(true);
+        btnArrival.setAlpha(1f);
+
+        btnExit.setEnabled(true);
+        btnExit.setAlpha(1f);
+
+        btnBreak.setEnabled(true);
+        btnBreak.setAlpha(1f);
+
         if (today == null) {
             statusChip.setText("Non pointé");
             arrivalValue.setText("--:--");
             exitValue.setText("--:--");
-            btnClock.setText(R.string.btn_arrivee);
-            btnClock.setBackgroundResource(R.drawable.btn_success);
-            btnClock.setEnabled(true);
-            btnClock.setAlpha(1f);
-        } else {
-            arrivalValue.setText(DatabaseHelper.shortTime(today.arrivalTime));
-            exitValue.setText(today.exitTime == null
-                    ? "en cours" : DatabaseHelper.shortTime(today.exitTime));
 
-            if (today.exitTime == null) {
-                statusChip.setText("En poste");
-                btnClock.setText(R.string.btn_sortie);
-                btnClock.setBackgroundResource(R.drawable.btn_danger);
-                btnClock.setEnabled(true);
-                btnClock.setAlpha(1f);
-            } else {
-                statusChip.setText("Journée terminée");
-                btnClock.setText("Journée terminée ✓");
-                btnClock.setBackgroundResource(R.drawable.btn_soft);
-                btnClock.setEnabled(false);
-                btnClock.setAlpha(0.7f);
-            }
+            btnArrival.setText("🌅 Pointer Entrée");
+            btnArrival.setBackgroundResource(R.drawable.btn_success);
+
+            btnExit.setText("🌙 Pointer Sortie");
+            btnExit.setBackgroundResource(R.drawable.btn_danger);
+
+        } else if (db.isClockedIn(userId)) {
+            // En session active
+            statusChip.setText("En poste ✅");
+            arrivalValue.setText(DatabaseHelper.shortTime(today.arrivalTime));
+            exitValue.setText("en cours");
+
+            btnArrival.setText("En poste (" + DatabaseHelper.shortTime(today.arrivalTime) + ") ✓");
+            btnArrival.setBackgroundResource(R.drawable.btn_soft);
+
+            btnExit.setText("🌙 Pointer Sortie");
+            btnExit.setBackgroundResource(R.drawable.btn_danger);
+
+        } else {
+            // Session précédente clôturée (prêt pour une nouvelle entrée)
+            statusChip.setText("Hors poste (Prêt pour nouvelle entrée)");
+            arrivalValue.setText(DatabaseHelper.shortTime(today.arrivalTime));
+            exitValue.setText(DatabaseHelper.shortTime(today.exitTime));
+
+            btnArrival.setText("🌅 Pointer Nouvelle Entrée");
+            btnArrival.setBackgroundResource(R.drawable.btn_success);
+
+            btnExit.setText("Sortie enregistrée (" + DatabaseHelper.shortTime(today.exitTime) + ") ✓");
+            btnExit.setBackgroundResource(R.drawable.btn_soft);
         }
 
-        // Pause en cours
+        // Pause en cours ou dernière pause
         BreakRecord open = db.getOpenBreak(userId);
         if (open != null) {
-            breakState.setText("Pause " + open.type.toLowerCase()
-                    + " depuis " + DatabaseHelper.shortTime(open.startTime)
-                    + " (" + open.durationMinutes() + " min)");
-            btnBreak.setText(R.string.btn_end_break);
+            breakEmojiHeader.setText(open.getEmoji());
+            breakState.setText("Pause " + open.type.toLowerCase() + " en cours");
+            breakTypeValue.setText(open.type);
+            breakStartValue.setText(DatabaseHelper.shortTime(open.startTime));
+            breakEndValue.setText("En cours");
+            breakDurationValue.setText(open.durationMinutes() + " min");
+
+            btnBreak.setText("🛑 Fin de pause (" + open.type + ")");
             btnBreak.setBackgroundResource(R.drawable.btn_success);
+        } else if (today != null && !today.breaks.isEmpty()) {
+            BreakRecord last = today.breaks.get(0);
+            breakEmojiHeader.setText(last.getEmoji());
+            breakState.setText("Dernière pause : " + last.type);
+            breakTypeValue.setText(last.type);
+            breakStartValue.setText(DatabaseHelper.shortTime(last.startTime));
+            breakEndValue.setText(DatabaseHelper.shortTime(last.endTime));
+            breakDurationValue.setText(last.durationMinutes() + " min");
+
+            btnBreak.setText("☕ Prenez une pause (Choisir le type)");
+            btnBreak.setBackgroundResource(R.drawable.btn_primary);
         } else {
-            breakState.setText(db.isClockedIn(userId)
-                    ? "Aucune pause en cours"
-                    : "Pointez votre arrivée pour pouvoir prendre une pause");
-            btnBreak.setText(R.string.btn_start_break);
+            breakEmojiHeader.setText("☕");
+            breakState.setText("Aucune pause enregistrée");
+            breakTypeValue.setText("Aucun");
+            breakStartValue.setText("--:--");
+            breakEndValue.setText("--:--");
+            breakDurationValue.setText("0 min");
+
+            btnBreak.setText("☕ Prenez une pause (Choisir le type)");
             btnBreak.setBackgroundResource(R.drawable.btn_primary);
         }
 

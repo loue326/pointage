@@ -1,5 +1,7 @@
 package com.example.gestionpointage.model;
 
+import java.util.Calendar;
+
 /**
  * Une pause : type, debut et fin.
  */
@@ -8,7 +10,7 @@ public class BreakRecord {
     public int id;
     public int userId;
     public int attendanceId;
-    public String type;       // Dejeuner, Cafe, Personnelle, Medicale, Priere
+    public String type;       // Dejeuner, Cafe, Personnelle, Medicale, Priere, Normale, Exceptionnelle
     public String startTime;  // HH:mm:ss
     public String endTime;    // HH:mm:ss (null = pause en cours)
 
@@ -34,24 +36,15 @@ public class BreakRecord {
      */
     public String getEmoji() {
         if (type == null) return "⏱";
-        switch (type.toLowerCase()) {
-            case "dejeuner":
-            case "déjeuner":
-                return "🍽️";
-            case "cafe":
-            case "café":
-                return "☕";
-            case "personnelle":
-                return "💼";
-            case "medicale":
-            case "médicale":
-                return "🏥";
-            case "priere":
-            case "prière":
-                return "🕌";
-            default:
-                return "⏸";
-        }
+        String t = type.toLowerCase();
+        if (t.contains("déjeuner") || t.contains("dejeuner")) return "🍽️";
+        if (t.contains("café") || t.contains("cafe")) return "☕";
+        if (t.contains("personnelle")) return "💼";
+        if (t.contains("médicale") || t.contains("medicale")) return "🏥";
+        if (t.contains("prière") || t.contains("priere")) return "🕌";
+        if (t.contains("exceptionnelle")) return "⚡";
+        if (t.contains("normale")) return "⏸️";
+        return "⏸";
     }
 
     public long durationMinutes() {
@@ -62,9 +55,9 @@ public class BreakRecord {
     }
 
     private long currentMinutes() {
-        java.util.Calendar c = java.util.Calendar.getInstance();
-        return c.get(java.util.Calendar.HOUR_OF_DAY) * 60L
-                + c.get(java.util.Calendar.MINUTE);
+        Calendar c = Calendar.getInstance();
+        return c.get(Calendar.HOUR_OF_DAY) * 60L
+                + c.get(Calendar.MINUTE);
     }
 
     private static long toMinutes(String hhmmss) {

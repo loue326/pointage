@@ -31,7 +31,7 @@ import java.util.Locale;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "gestion_pointage.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 6;
 
     public static final String TABLE_USERS = "users";
     public static final String TABLE_ATTENDANCE = "attendance";
@@ -40,7 +40,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // Types de pause proposés a l'employe
     public static final String[] BREAK_TYPES = {
-            "Déjeuner", "Café", "Personnelle", "Médicale", "Prière"
+            "Pause normale",
+            "Déjeuner",
+            "Café",
+            "Personnelle",
+            "Médicale",
+            "Prière",
+            "Pause exceptionnelle"
     };
 
     public DatabaseHelper(Context context) {
@@ -64,13 +70,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "role TEXT NOT NULL, " +
                 "job TEXT)");
 
+        // Plusieurs pointages possibles par jour (sortie puis nouvelle entrée)
         db.execSQL("CREATE TABLE " + TABLE_ATTENDANCE + " (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "user_id INTEGER NOT NULL, " +
                 "date TEXT NOT NULL, " +
                 "arrival_time TEXT, " +
                 "exit_time TEXT, " +
-                "UNIQUE(user_id, date), " +
                 "FOREIGN KEY(user_id) REFERENCES users(id)" +
                 ")");
 
@@ -155,11 +161,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private void insertDefaultUsers(SQLiteDatabase db) {
         insertUser(db, "Administrateur", "admin@gmail.com", "admin123", "admin", "Direction");
-        insertUser(db, "Ahmed Ben Salah", "employee@gmail.com", "emp123", "employee", "Développeur");
-        insertUser(db, "Sarra Trabelsi", "sarra@gmail.com", "emp123", "employee", "Comptabilité");
-        insertUser(db, "Mohamed Gharbi", "mohamed@gmail.com", "emp123", "employee", "Ressources Humaines");
-        insertUser(db, "Nour Chaabane", "nour@gmail.com", "emp123", "employee", "Commercial");
-        insertUser(db, "Karim Jlassi", "karim@gmail.com", "emp123", "employee", "Technicien");
+        insertUser(db, "Loue Bessaadi", "loue@gmail.com", "emp123", "employee", "Développeur");
+        insertUser(db, "Amani", "amani@gmail.com", "emp123", "employee", "Ingénieur");
+        insertUser(db, "Balkis", "balkis@gmail.com", "emp123", "employee", "Designer");
     }
 
     private void insertUser(SQLiteDatabase db, String name, String email,
@@ -192,7 +196,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     + Long.parseLong(days[dayIdx]) * 24L * 3600L * 1000L);
             String date = dayFormat.format(d);
 
-            for (int userId = 2; userId <= 6; userId++) {
+            for (int userId = 2; userId <= 4; userId++) {
 
                 ContentValues att = new ContentValues();
                 att.put("user_id", userId);
@@ -223,24 +227,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
         }
 
-        // Une demande de conge deja presente
-        ContentValues leave = new ContentValues();
-        leave.put("user_id", 3);
-        leave.put("type", "Congé annuel");
-        leave.put("start_date", shiftDays(5));
-        leave.put("end_date", shiftDays(8));
-        leave.put("reason", "Vacances familiales");
-        leave.put("status", "pending");
-        leave.put("created_at", nowFull());
-        db.insert(TABLE_LEAVES, null, leave);
+        // Demandes de conge de demonstration
+        ContentValues leave1 = new ContentValues();
+        leave1.put("user_id", 2); // Loue Bessaadi
+        leave1.put("type", "Congé annuel");
+        leave1.put("start_date", shiftDays(5));
+        leave1.put("end_date", shiftDays(8));
+        leave1.put("reason", "Vacances familiales");
+        leave1.put("status", "pending");
+        leave1.put("created_at", nowFull());
+        db.insert(TABLE_LEAVES, null, leave1);
 
         ContentValues leave2 = new ContentValues();
-        leave2.put("user_id", 5);
+        leave2.put("user_id", 3); // Amani
         leave2.put("type", "Congé maladie");
-        leave2.put("start_date", shiftDays(-6));
-        leave2.put("end_date", shiftDays(-5));
-        leave2.put("reason", "Repos médical");
-        leave2.put("status", "approved");
+        leave2.put("start_date", shiftDays(2));
+        leave2.put("end_date", shiftDays(3));
+        leave2.put("reason", "Rendez-vous médical");
+        leave2.put("status", "pending");
         leave2.put("created_at", nowFull());
         db.insert(TABLE_LEAVES, null, leave2);
     }
@@ -340,8 +344,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private int getAttendanceId(int userId, boolean onlyOpen) {
         SQLiteDatabase db = getReadableDatabase();
         String sql = onlyOpen
-                ? "SELECT id FROM attendance WHERE user_id = ? AND date = ? AND exit_time IS NULL"
-                : "SELECT id FROM attendance WHERE user_id = ? AND date = ?";
+                ? "SELECT id FROM attendance WHERE user_id = ? AND date = ? AND exit_time IS NULL ORDER BY id DESC LIMIT 1"
+                : "SELECT id FROM attendance WHERE user_id = ? AND date = ? ORDER BY id DESC LIMIT 1";
         Cursor c = db.rawQuery(sql, new String[]{String.valueOf(userId), today()});
         int id = -1;
         if (c.moveToFirst()) id = c.getInt(0);
@@ -358,7 +362,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public boolean markArrival(int userId) {
-        if (hasAttendanceToday(userId)) return false;
+        if (isClockedIn(userId)) return false;
         SQLiteDatabase db = getWritableDatabase();
         ContentValues v = new ContentValues();
         v.put("user_id", userId);
