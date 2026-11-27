@@ -251,6 +251,7 @@
                 android:textSize="13sp"
                 android:textStyle="bold" />
 
+            <!-- Ligne 1 : Pointage & Pauses -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -320,6 +321,7 @@
                 </LinearLayout>
             </LinearLayout>
 
+            <!-- Ligne 2 : Historique & Demander un congé -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -358,7 +360,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/menuAgenda"
+                    android:id="@+id/menuAddLeave"
                     style="@style/MenuCard"
                     android:layout_marginStart="6dp">
 
@@ -366,7 +368,7 @@
                         android:layout_width="46dp"
                         android:layout_height="46dp"
                         android:background="@drawable/circle_warning"
-                        android:contentDescription="@string/menu_agenda"
+                        android:contentDescription="@string/leave_title"
                         android:gravity="center"
                         android:text="🌴"
                         android:textSize="20sp" />
@@ -375,7 +377,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
-                        android:text="@string/menu_agenda"
+                        android:text="Demander un congé"
                         android:textColor="@color/text_dark"
                         android:textSize="14sp"
                         android:textStyle="bold" />
@@ -383,12 +385,13 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Demander un congé"
+                        android:text="Formulaire de congé"
                         android:textColor="@color/text_light"
                         android:textSize="11sp" />
                 </LinearLayout>
             </LinearLayout>
 
+            <!-- Ligne 3 : Mes demandes & Suivi -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -398,7 +401,8 @@
                 <LinearLayout
                     android:id="@+id/menuMyLeaves"
                     style="@style/MenuCard"
-                    android:layout_marginEnd="6dp">
+                    android:layout_width="match_parent"
+                    android:layout_weight="1">
 
                     <TextView
                         android:layout_width="46dp"
@@ -413,7 +417,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
-                        android:text="@string/menu_mes_demandes"
+                        android:text="Mes demandes &amp; Suivi"
                         android:textColor="@color/text_dark"
                         android:textSize="14sp"
                         android:textStyle="bold" />
@@ -422,38 +426,7 @@
                         android:id="@+id/myLeavesSubtitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Suivi des statuts"
-                        android:textColor="@color/text_light"
-                        android:textSize="11sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/menuAddLeave"
-                    style="@style/MenuCard"
-                    android:layout_marginStart="6dp">
-
-                    <TextView
-                        android:layout_width="46dp"
-                        android:layout_height="46dp"
-                        android:background="@drawable/circle_danger"
-                        android:contentDescription="@string/leave_title"
-                        android:gravity="center"
-                        android:text="📝"
-                        android:textSize="20sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:text="Nouvelle demande"
-                        android:textColor="@color/text_dark"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Formulaire de congé"
+                        android:text="Voir si l'admin a accepté ou refusé"
                         android:textColor="@color/text_light"
                         android:textSize="11sp" />
                 </LinearLayout>

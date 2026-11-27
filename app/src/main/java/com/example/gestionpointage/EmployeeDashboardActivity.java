@@ -63,13 +63,10 @@ public class EmployeeDashboardActivity extends AppCompatActivity {
                 startActivity(new Intent(this, PointageActivity.class)));
 
         findViewById(R.id.menuBreaks).setOnClickListener(v ->
-                startActivity(new Intent(this, PointageActivity.class)));
+                startActivity(new Intent(this, BreaksActivity.class)));
 
         findViewById(R.id.menuHistory).setOnClickListener(v ->
                 startActivity(new Intent(this, HistoryActivity.class)));
-
-        findViewById(R.id.menuAgenda).setOnClickListener(v ->
-                startActivity(new Intent(this, LeaveActivity.class)));
 
         findViewById(R.id.menuMyLeaves).setOnClickListener(v ->
                 startActivity(new Intent(this, LeaveActivity.class)));
