@@ -52,6 +52,7 @@ public class LeaveRequest {
     public static long dateDiffDays(String start, String end) {
         try {
             java.text.SimpleDateFormat f = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US);
+            f.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
             java.util.Date d1 = f.parse(start);
             java.util.Date d2 = f.parse(end);
             long diff = d2.getTime() - d1.getTime();

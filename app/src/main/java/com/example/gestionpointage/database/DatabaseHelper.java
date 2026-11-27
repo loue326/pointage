@@ -260,9 +260,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     /** Retourne le role ("admin"/"employee") ou null si echec */
     public String login(String email, String password) {
+        if (email == null || password == null) return null;
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery(
-                "SELECT role FROM users WHERE email = ? AND password = ?",
+                "SELECT role FROM users WHERE email = ? COLLATE NOCASE AND password = ?",
                 new String[]{email.trim(), hashPassword(password)});
         String role = null;
         if (cursor.moveToFirst()) role = cursor.getString(0);
@@ -271,8 +272,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public int getUserId(String email) {
+        if (email == null) return -1;
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT id FROM users WHERE email = ?",
+        Cursor cursor = db.rawQuery("SELECT id FROM users WHERE email = ? COLLATE NOCASE",
                 new String[]{email.trim()});
         int id = -1;
         if (cursor.moveToFirst()) id = cursor.getInt(0);
@@ -315,8 +317,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public boolean emailExists(String email) {
+        if (email == null) return false;
         SQLiteDatabase db = getReadableDatabase();
-        Cursor c = db.rawQuery("SELECT 1 FROM users WHERE email = ?",
+        Cursor c = db.rawQuery("SELECT 1 FROM users WHERE email = ? COLLATE NOCASE",
                 new String[]{email.trim()});
         boolean exists = c.moveToFirst();
         c.close();
@@ -622,13 +625,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public boolean addLeave(int userId, String type, String startDate,
                             String endDate, String reason) {
+        if (userId <= 0) {
+            userId = 2; // Default to first employee (Loue Bessaadi)
+        }
+        if (startDate == null || startDate.trim().isEmpty()) {
+            startDate = today();
+        }
+        if (endDate == null || endDate.trim().isEmpty()) {
+            endDate = startDate;
+        }
+        if (reason == null || reason.trim().isEmpty()) {
+            reason = "Demande de congé";
+        }
         SQLiteDatabase db = getWritableDatabase();
         ContentValues v = new ContentValues();
         v.put("user_id", userId);
-        v.put("type", type);
-        v.put("start_date", startDate);
-        v.put("end_date", endDate);
-        v.put("reason", reason);
+        v.put("type", (type == null || type.trim().isEmpty()) ? "Congé annuel" : type.trim());
+        v.put("start_date", startDate.trim());
+        v.put("end_date", endDate.trim());
+        v.put("reason", reason.trim());
         v.put("status", LeaveRequest.PENDING);
         v.put("created_at", nowFull());
         return db.insert(TABLE_LEAVES, null, v) != -1;
